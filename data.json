@@ -1,7 +1,7 @@
 {
-    "header": "eMemo General",
+    "header": "Title for App",
     "ApplicationID": {
-        "IDCode": "eMemo8806"
+        "IDCode": "eXXXX881X6"
       },
     "fields": [
       { "label": "Applicant Name", "id": "ApplicantName", "value": "Ferryandi", "type": "text" },

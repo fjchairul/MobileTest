@@ -1,0 +1,14 @@
+{
+    "header": "eMemo General",
+    "ApplicationID": {
+        "IDCode": "eMemo8806"
+      },
+    "fields": [
+      { "label": "Applicant Name", "id": "ApplicantName", "value": "Ferryandi", "type": "text" },
+      { "label": "Document ID", "id": "documentId", "value": "XXX123", "type": "text" },
+      { "label": "Applicant No", "id": "applicantNo", "value": "123", "type": "text" },
+      { "label": "Submission Date Time", "id": "submissionDateTime", "value": "12-01-2023", "type": "text" },
+      { "label": "Remarks", "id": "remarks", "value": "xxxx", "type": "textarea" }
+    ]
+  }
+  

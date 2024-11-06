@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eMemo</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Hide the Application ID from UI */
+      #applicationID {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container my-5">
+      <!-- Dynamic Header -->
+      <header class="text-center mb-4">
+        <h1 id="header">eMemo</h1>
+        <!-- Header will be dynamically set from JSON -->
+        <h2 id="applicationID"></h2>
+        <!-- ApplicationID will be hidden -->
+      </header>
+
+      <!-- Back Button -->
+      <div class="mb-4">
+        <button type="button" class="btn btn-secondary" onclick="goBack()">
+          Back
+        </button>
+      </div>
+
+      <!-- Form Fields -->
+      <form id="dynamicForm">
+        <!-- Form fields will be populated here -->
+      </form>
+
+      <!-- Action Buttons -->
+      <div class="d-flex justify-content-around mb-4">
+        <button
+          type="button"
+          class="btn btn-success"
+          onclick="handleAction('Approve')"
+        >
+          Approve
+        </button>
+        <button
+          type="button"
+          class="btn btn-warning"
+          onclick="handleAction('Return')"
+        >
+          Return
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          onclick="handleAction('Reject')"
+        >
+          Reject
+        </button>
+      </div>
+
+      <!-- Comment Text Area -->
+      <div class="mb-4">
+        <label for="comment" class="form-label">Comment</label>
+        <textarea
+          class="form-control"
+          id="comment"
+          rows="3"
+          placeholder="Add your comments here"
+        >
+        </textarea>
+      </div>
+    </div>
+
+    <script>
+      // Fetch data from JSON file and populate form fields
+      document.addEventListener("DOMContentLoaded", () => {
+        fetch("data.json") // Adjust path if necessary
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Data fetched successfully:", data); // Debugging line
+
+            // Dynamically set the header and application ID (hidden)
+            document.getElementById("header").innerText = data.header; // Set header from JSON
+            document.getElementById("applicationID").innerText =
+              data.ApplicationID.IDCode; // Set Application ID (hidden)
+
+            // Create form fields dynamically
+            const form = document.getElementById("dynamicForm");
+            data.fields.forEach((field) => {
+              const formGroup = document.createElement("div");
+              formGroup.classList.add("mb-3");
+
+              const label = document.createElement("label");
+              label.setAttribute("for", field.id);
+              label.classList.add("form-label");
+              label.innerText = field.label;
+              formGroup.appendChild(label);
+
+              if (field.type === "textarea") {
+                const textarea = document.createElement("textarea");
+                textarea.classList.add("form-control");
+                textarea.id = field.id;
+                textarea.rows = 3;
+                textarea.value = field.value;
+                textarea.readOnly = true;
+                formGroup.appendChild(textarea);
+              } else {
+                const input = document.createElement("input");
+                input.type = field.type;
+                input.classList.add("form-control");
+                input.id = field.id;
+                input.value = field.value;
+                input.readOnly = true;
+                formGroup.appendChild(input);
+              }
+
+              form.appendChild(formGroup);
+            });
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error); // Log fetch error
+          });
+      });
+
+      // Handle the button action (Approve, Return, Reject)
+      function handleAction(actionType) {
+        const header = document.getElementById("header").innerText;
+        const applicationID =
+          document.getElementById("applicationID").innerText; // Get the hidden Application ID
+        const comment = document.getElementById("comment").value;
+
+        // Collect form field data
+        const fields = Array.from(
+          document.querySelectorAll("#dynamicForm input, #dynamicForm textarea")
+        ).map((input) => ({
+          label: input.previousSibling.innerText,
+          id: input.id,
+          value: input.value,
+        }));
+
+        // Create JSON data object with the action type
+        const outputData = {
+          header,
+          ApplicationID: { IDCode: applicationID }, // Include ApplicationID in the exported JSON
+          fields,
+          comment,
+          action: actionType, // Add the action type (Approve, Return, Reject)
+        };
+
+        // Convert to JSON blob and create download link
+        const jsonBlob = new Blob([JSON.stringify(outputData, null, 2)], {
+          type: "application/json",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(jsonBlob);
+        link.download = `${actionType.toLowerCase()}_data.json`; // Filename based on action type
+        link.click();
+      }
+
+      // Function to go back to the previous page
+      function goBack() {
+        window.history.back(); // This will navigate to the previous page in the browser's history
+      }
+    </script>
+  </body>
+</html>
